@@ -1,28 +1,35 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component, Fragment } from 'react'
+import { Query } from 'react-apollo'
+import gql from 'graphql-tag'
+
+const ARTISTS_QUERY = gql`
+  query {
+    artists {
+      id
+      name
+    }
+  }
+`
+
 
 class App extends Component {
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
-    );
+      <Fragment>
+        <Query query={ARTISTS_QUERY}>
+          {({ loading, error, data }) => {
+            if (loading) return <div>Loading..</div>
+            if (error) return <div>Error... {error.message}</div>
+            const { artists } = data
+            
+            return artists.map(artist => (
+              <div key={artist.id}>{artist.name}</div>
+            ))
+          }}
+        </Query>
+      </Fragment>
+    )
   }
 }
 
-export default App;
+export default App
